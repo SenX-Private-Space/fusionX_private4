@@ -1398,7 +1398,7 @@ static int bq2597x_get_work_mode(struct bq2597x *bq, int *mode)
 	else
 		*mode = BQ25970_ROLE_STDALONE;
 
-	bq_dbg("work mode:%s\n",
+	bq_info("work mode:%s\n",
 		*mode == BQ25970_ROLE_STDALONE ?
 			"Standalone" :
 			(*mode == BQ25970_ROLE_SLAVE ? "Slave" : "Master"));
@@ -1415,7 +1415,7 @@ static int bq2597x_detect_device(struct bq2597x *bq)
 		bq->part_no = (data & BQ2597X_DEV_ID_MASK);
 		bq->part_no >>= BQ2597X_DEV_ID_SHIFT;
 
-		bq_dbg("detect device:%d\n", data);
+		pr_err("detect device:%d\n", data);
 		if (data == SC8551_DEVICE_ID || data == SC8551A_DEVICE_ID)
 			bq->chip_vendor = SC8551;
 		else if (data == NU2105_DEVICE_ID)
@@ -1991,7 +1991,7 @@ static int bq2597x_charger_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGING_ENABLED:
 		bq2597x_check_charge_enabled(bq, &bq->charge_enabled);
 		val->intval = bq->charge_enabled;
-		bq_dbg("POWER_SUPPLY_PROP_CHARGING_ENABLED: %s\n",
+		bq_info("POWER_SUPPLY_PROP_CHARGING_ENABLED: %s\n",
 			val->intval ? "enable" : "disable");
 		break;
 	case POWER_SUPPLY_PROP_STATUS:
@@ -2128,7 +2128,7 @@ static int bq2597x_charger_set_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGING_ENABLED:
 		bq2597x_enable_charge(bq, val->intval);
 		bq2597x_check_charge_enabled(bq, &bq->charge_enabled);
-		bq_dbg("POWER_SUPPLY_PROP_CHARGING_ENABLED: %s\n",
+		bq_info("POWER_SUPPLY_PROP_CHARGING_ENABLED: %s\n",
 			val->intval ? "enable" : "disable");
 		break;
 	case POWER_SUPPLY_PROP_PRESENT:
@@ -2332,7 +2332,7 @@ static int bq2597x_check_vbus_error_status(struct bq2597x *bq)
 
 	ret = bq2597x_read_byte(bq, BQ2597X_REG_0A, &stat);
 	if (!ret) {
-		bq_dbg("BQ2597X_REG_0A:0x%02x\n", stat);
+		bq_info("BQ2597X_REG_0A:0x%02x\n", stat);
 		if (stat & VBUS_ERROR_LOW_MASK)
 			return VBUS_ERROR_LOW;
 		else if (stat & VBUS_ERROR_HIGH_MASK)
@@ -2608,7 +2608,7 @@ static int bq2597x_resume(struct device *dev)
 	}
 	bq2597x_enable_adc(bq, true);
 	power_supply_changed(bq->fc2_psy);
-	bq_dbg("Resume successfully!");
+	bq_err("Resume successfully!");
 
 	return 0;
 }
